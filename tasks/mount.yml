@@ -1,0 +1,4 @@
+---
+- name: Create mount point for Jenkins data directory
+  file: path={{ jenkins_lib }} state=directory owner=jenkins group=jenkins mode=0664
+  mount: fstype=ext4 name={{ jenkins_lib }} src=/dev/sdb1 state=mounted

@@ -1,4 +1,6 @@
 ---
+- include: mount.yml
+
 - include: repo.yml
 
 - include: dependencies_deb.yml

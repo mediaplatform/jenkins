@@ -1,0 +1,76 @@
+{
+    "variables": {
+        "build_iteration": "{{timestamp}}",
+        "kind": "{{env `PACKER_KIND`}}",
+        "ami_name_prefix": "{{env `PACKER_KIND`}}/",
+        "region": "us-east-1",
+        "source_ami": "ami-8827efe0",
+        "instance_type": "m1.medium",
+        "ami_region_one": "us-east-1",
+        "ami_region_two": "us-west-2",
+        "ssh_username": "ubuntu",
+        "security_group_ids_one": "common administration",
+        "run_tags_category": "deployment",
+        "run_tags_kind": "snapshot_model",
+        "run_tags_lifecycle": "temporary",
+        "run_tags_manager": "ansible",
+        "run_tags_builder": "packer",
+        "tags_category": "deployment",
+        "tags_kind": "{{env `PACKER_KIND`}}",
+        "tags_builder": "packer",
+        "tags_manager": "ansible",
+        "tags_build_iteration": "{{timestamp}}",
+        "iam_instance_profile": "",
+        "vpc_id": "vpc-c1163ca4",
+        "ami_name": "{{env `PACKER_KIND`}}/{{timestamp}}",
+        "ansible_playbook_file": "{{env `PACKER_ANSIBLE_PLAYBOOK_FILE`}}.yml",
+        "ansible_ec2_inventory_path": "{{env `PACKER_ANSIBLE_EC2_INVENTORY_PATH`}}",
+        "jenkins_data_snapshot_id": "{{env `PACKER_JENKINS_DATA_SNAPSHOT_ID`}}",
+        "jenkins_data_device_name": "{{env `PACKER_JENKINS_DATA_DEVICE_NAME`}}",
+        "jenkins_data_volume_type": "{{env `PACKER_JENKINS_DATA_VOLUME_TYPE`}}"
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "associate_public_ip_address": "true",
+        "ami_name": "{{user `ami_name`}}",
+        "region": "{{user `region`}}",
+        "source_ami": "{{user `source_ami`}}",
+        "instance_type": "{{user `instance_type`}}",
+        "launch_block_device_mappings": [{
+                "device_name": "{{user `jenkins_data_device_name`}}",
+                "snapshot_id": "{{user `jenkins_data_snapshot_id`}}",
+                "volume_type": "{{user `jenkins_data_volume_type`}}",
+                "delete_on_termination": "false"
+        }],
+        "ami_regions": [
+            "{{user `ami_region_one`}}",
+            "{{user `ami_region_two`}}"
+        ],
+        "ssh_username": "ubuntu",
+        "security_group_ids": [
+            "{{user `security_group_ids_one`}}"
+        ],
+        "run_tags": {
+            "category": "{{user `run_tags_category`}}",
+            "kind": "{{user `run_tags_kind`}}",
+            "lifecycle": "{{user `run_tags_lifecycle`}}",
+            "manager": "{{user `run_tags_manager`}}",
+            "builder": "{{user `run_tags_builder`}}",
+            "building": "{{user `ami_name`}}"
+        },
+        "tags": {
+            "category": "{{user `tags_category`}}",
+            "kind": "{{user `tags_kind`}}",
+            "manager": "{{user `tags_manager`}}",
+            "builder": "{{user `tags_builder`}}",
+            "build_iteration": "{{user `tags_build_iteration`}}"
+        },
+        "iam_instance_profile": "{{user `iam_instance_profile`}}",
+        "vpc_id": "{{user `vpc_id`}}"
+    }],
+    "provisioners": [{
+        "type": "ansible-local",
+        "playbook_file": "{{user `ansible_playbook_file`}}",
+        "inventory_file": "{{user `ansible_inventory_file`}}"
+    }]
+}
